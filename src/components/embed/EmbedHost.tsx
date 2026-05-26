@@ -1,6 +1,8 @@
 "use client";
 
+import { useEffect } from "react";
 import type { EmbedPayload } from "@/lib/embed-types";
+import { postEmbedReady, waitForEmbedImages } from "@/lib/embed-ready";
 import {
   carouselConfigSchema,
   gridConfigSchema,
@@ -14,9 +16,30 @@ import { WallCarousel } from "./WallCarousel";
 
 type Props = {
   payload: EmbedPayload;
+  /** When set, notifies the parent frame (login showcase) after images load. */
+  widgetToken?: string;
 };
 
-export function EmbedHost({ payload }: Props) {
+export function EmbedHost({ payload, widgetToken }: Props) {
+  useEffect(() => {
+    if (!widgetToken) return;
+
+    let cancelled = false;
+    const root = document.querySelector(".smp-embed-root");
+    const done = () => {
+      if (!cancelled) postEmbedReady(widgetToken);
+    };
+
+    if (!root) {
+      done();
+      return;
+    }
+
+    void waitForEmbedImages(root).then(done);
+    return () => {
+      cancelled = true;
+    };
+  }, [widgetToken, payload.entries.length]);
   if (payload.entries.length === 0) {
     return <p className="text-sm text-zinc-400 p-4">No entries to display.</p>;
   }

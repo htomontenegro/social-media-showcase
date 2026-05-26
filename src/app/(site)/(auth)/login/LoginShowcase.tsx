@@ -1,7 +1,10 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { isEmbedReadyMessage } from "@/lib/embed-ready";
 import { LoginForm } from "./LoginForm";
+
+const EMBED_LOAD_TIMEOUT_MS = 8000;
 
 type Props = {
   widgetToken: string;
@@ -11,6 +14,7 @@ type Props = {
 
 export function LoginShowcase({ widgetToken, embedBaseUrl, googleAuthEnabled }: Props) {
   const [panelOpen, setPanelOpen] = useState(false);
+  const [embedReady, setEmbedReady] = useState(false);
   const targetId = `smp-widget-${widgetToken}`;
   const scriptSrc = `${embedBaseUrl}/embed/v1/embed.js`;
 
@@ -30,9 +34,40 @@ export function LoginShowcase({ widgetToken, embedBaseUrl, googleAuthEnabled }: 
     };
   }, [scriptSrc, targetId, widgetToken]);
 
+  useEffect(() => {
+    function onMessage(event: MessageEvent) {
+      if (event.origin !== window.location.origin) return;
+      if (!isEmbedReadyMessage(event.data)) return;
+      if (event.data.token !== widgetToken) return;
+      setEmbedReady(true);
+    }
+
+    window.addEventListener("message", onMessage);
+    const timeout = window.setTimeout(() => setEmbedReady(true), EMBED_LOAD_TIMEOUT_MS);
+
+    return () => {
+      window.removeEventListener("message", onMessage);
+      window.clearTimeout(timeout);
+    };
+  }, [widgetToken]);
+
   return (
     <div className="relative h-screen w-screen overflow-hidden bg-black">
       <div id={targetId} className="absolute inset-0" style={{ height: "100vh" }} />
+
+      <div
+        className={`absolute inset-0 z-30 flex flex-col items-center justify-center bg-zinc-950 transition-opacity duration-500 ${
+          embedReady ? "pointer-events-none opacity-0" : "opacity-100"
+        }`}
+        aria-hidden={embedReady}
+        aria-busy={!embedReady}
+      >
+        <div
+          className="h-10 w-10 animate-spin rounded-full border-[3px] border-white/15 border-t-white/70"
+          aria-hidden="true"
+        />
+        <p className="mt-4 text-sm text-zinc-400">Loading showcase…</p>
+      </div>
 
       <div className="pointer-events-none absolute inset-0 z-10">
         <div className="pointer-events-auto absolute inset-x-6 top-6 sm:inset-x-auto sm:top-auto sm:bottom-6 sm:left-6 sm:max-w-md">

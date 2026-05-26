@@ -11,5 +11,5 @@ export default async function EmbedPage({
   const payload = await getEmbedPayload(token);
   if (!payload) notFound();
 
-  return <EmbedHost payload={payload} />;
+  return <EmbedHost payload={payload} widgetToken={token} />;
 }
