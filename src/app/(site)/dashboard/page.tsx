@@ -150,27 +150,6 @@ export default async function DashboardPage() {
           ))}
         </ul>
       </section>
-
-      <section className="rounded-xl border border-zinc-800 bg-zinc-900/50 p-5">
-        <h2 className="font-semibold text-zinc-50">What you can import today</h2>
-        <ul className="mt-3 space-y-2 text-sm text-zinc-400">
-          <li className="flex gap-2">
-            <span className="text-emerald-500">✓</span>
-            <span>
-              <strong className="text-zinc-300">Instagram posts & reels</strong> — public URLs like
-              instagram.com/p/… or /reel/…
-            </span>
-          </li>
-          <li className="flex gap-2">
-            <span className="text-zinc-600">·</span>
-            <span>Captions, descriptions, author handle, and cover image when Open Graph provides them</span>
-          </li>
-          <li className="flex gap-2">
-            <span className="text-zinc-600">·</span>
-            <span>Images compressed and hosted so embeds load fast (target max ~500KB per image)</span>
-          </li>
-        </ul>
-      </section>
     </div>
   );
 }

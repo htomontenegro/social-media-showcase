@@ -41,9 +41,9 @@ npm run db:setup
 npm run dev
 ```
 
-The seed creates or updates the admin account (override with `SEED_ADMIN_NAME`, `SEED_ADMIN_EMAIL`, `SEED_ADMIN_PASSWORD` in `.env`). Public registration is disabled by default; set `REGISTRATION_ENABLED` to `true` in `src/lib/app-config.ts` when you want to re-enable it.
+The seed creates or updates the admin account, imports the demo Instagram URLs, and builds a **Wall + Carousel** widget (override with `SEED_ADMIN_*` and `SEED_LOGIN_WIDGET_TOKEN` in `.env`). Public registration is disabled by default; set `REGISTRATION_ENABLED` to `true` in `src/lib/app-config.ts` when you want to re-enable it.
 
-5. Open [http://localhost:3000](http://localhost:3000), sign in, import Instagram URLs, create a widget, copy the embed snippet.
+5. Open [http://localhost:3000](http://localhost:3000) — the login page is a full-screen embed of that widget with a small **Sign in** button. After seeding, you can also copy the same embed snippet from the dashboard.
 
 ## Embed on external sites
 
@@ -62,10 +62,8 @@ Optional: set height on the script instead of the div with `data-height="100vh"`
 
 Public JSON API: `GET /api/embed/YOUR_TOKEN` (CORS enabled).
 
-## WordPress migration (optional)
+## Tests
 
 ```bash
-npx tsx scripts/migrate-from-wp.ts --input export.json --user-id USER_CUID
+npm run test:run
 ```
-
-Export format: JSON array of posts with meta fields from the legacy `social-media-posts` plugin.
