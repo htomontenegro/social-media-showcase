@@ -1,36 +1,71 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Social Media Importer & Embed Widgets
 
-## Getting Started
+Next.js 15 app for importing Instagram posts and embedding **Carousel**, **Grid**, or **Wall** widgets on any website.
 
-First, run the development server:
+## Stack
+
+- Next.js 15 (App Router), TypeScript, Tailwind CSS
+- PostgreSQL + Prisma
+- NextAuth.js (Google OAuth + email/password)
+- Cheerio (OG metadata), sharp (images ≤ 500KB)
+- GSAP (carousel), local uploads or AWS S3
+
+## Quick start
+
+1. Copy environment file:
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+cp .env.example .env
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+2. Set `AUTH_SECRET` (e.g. `openssl rand -base64 32`) and `DATABASE_URL`.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+3. Start Postgres:
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+docker compose up -d
+```
 
-## Learn More
+4. Migrate, seed the default admin user, and run:
 
-To learn more about Next.js, take a look at the following resources:
+```bash
+npx prisma migrate dev --name init
+npm run db:seed
+npm run dev
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Production-style setup (deploy migrations + seed):
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```bash
+npm run db:setup
+npm run dev
+```
 
-## Deploy on Vercel
+The seed creates or updates the admin account (override with `SEED_ADMIN_NAME`, `SEED_ADMIN_EMAIL`, `SEED_ADMIN_PASSWORD` in `.env`). Public registration is disabled by default; set `REGISTRATION_ENABLED` to `true` in `src/lib/app-config.ts` when you want to re-enable it.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+5. Open [http://localhost:3000](http://localhost:3000), sign in, import Instagram URLs, create a widget, copy the embed snippet.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Embed on external sites
+
+```html
+<!-- Give the container a height (e.g. 100vh or a fixed px value) so the widget can fill it -->
+<div id="smp-widget-YOUR_TOKEN" style="height: 100vh"></div>
+<script
+  async
+  src="https://your-domain.com/embed/v1/embed.js"
+  data-widget="YOUR_TOKEN"
+  data-target="smp-widget-YOUR_TOKEN"
+></script>
+```
+
+Optional: set height on the script instead of the div with `data-height="100vh"`. The loader also matches Elementor widget box height automatically when embedded in a sized flex column.
+
+Public JSON API: `GET /api/embed/YOUR_TOKEN` (CORS enabled).
+
+## WordPress migration (optional)
+
+```bash
+npx tsx scripts/migrate-from-wp.ts --input export.json --user-id USER_CUID
+```
+
+Export format: JSON array of posts with meta fields from the legacy `social-media-posts` plugin.

@@ -1,0 +1,2 @@
+-- AlterEnum
+ALTER TYPE "WidgetType" ADD VALUE 'WALL_CAROUSEL';

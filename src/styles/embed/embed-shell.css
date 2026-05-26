@@ -1,0 +1,76 @@
+/* Full-height embed iframe: fill the iframe viewport (100vh = iframe height) */
+
+html:has(.smp-embed-root) {
+	height: 100%;
+	min-height: 100vh;
+	margin: 0;
+	padding: 0;
+	background: var(--smp-embed-bg, #0b0b0b);
+}
+
+html:has(.smp-embed-root) body {
+	display: flex;
+	flex-direction: column;
+	height: 100%;
+	min-height: 100vh;
+	margin: 0;
+	padding: 0;
+	overflow-x: hidden;
+}
+
+body:has(.smp-embed-root) > * {
+	flex: 1 1 auto;
+	display: flex;
+	flex-direction: column;
+	min-height: 100vh;
+	width: 100%;
+}
+
+.smp-embed-root {
+	display: flex;
+	flex-direction: column;
+	flex: 1 1 auto;
+	width: 100%;
+	height: 100%;
+	min-height: 100vh;
+	overflow-x: hidden;
+	background: var(--smp-embed-bg, #0b0b0b);
+}
+
+.smp-embed-root > * {
+	flex: 1 1 auto;
+	min-height: 100vh;
+	height: 100%;
+	width: 100%;
+}
+
+.smp-embed-root .smp-wall-carousel,
+.smp-embed-root .smp-wall {
+	min-height: 100vh;
+	height: 100%;
+}
+
+.smp-embed-root .smp-wall {
+	width: 100%;
+	max-width: 100%;
+	margin-left: 0;
+	margin-right: 0;
+}
+
+.smp-embed-root .smp-wall__grid {
+	grid-auto-rows: calc(
+		(100% - (var(--smp-wall-gap) * (var(--smp-wall-rows) - 1))) / var(--smp-wall-rows)
+	);
+}
+
+.smp-embed-root .smp-carousel {
+	flex: 1 1 auto;
+	min-height: 100vh;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+}
+
+.smp-embed-root .smp-grid {
+	min-height: 100vh;
+}
